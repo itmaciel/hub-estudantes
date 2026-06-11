@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "../style/Home.css";
 
 function CalendarWidget() {
@@ -140,31 +141,30 @@ function CompromissosWidget() {
 }
 
 function GerenciadorTarefas() {
-  const [tasks, setTasks] = useState([
-    { id: 1, done: true, text: "Revisão de Álgebra" },
-    { id: 2, done: true, text: "Enviar wireframe do Hub" },
-    { id: 3, done: false, text: "Pesquisa de IHC" },
-    { id: 4, done: false, text: "Comprar cartolina" },
-  ]);
+  const [tasks, setTasks] = useState([]);
   const [newTaskText, setNewTaskText] = useState("");
 
-  const toggleTask = (id) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-    );
+  const authHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+
+  // Load on mount
+  useEffect(() => {
+    axios.get("/api/tasks", authHeader()).then((r) => setTasks(r.data));
+  }, []);
+
+  const toggleTask = async (id, done) => {
+    const { data } = await axios.patch(`/api/tasks/${id}`, { done: !done }, authHeader());
+    setTasks((prev) => prev.map((t) => (t._id === id ? data : t)));
   };
 
-  const handleAddTask = (e) => {
+  const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTaskText.trim()) return;
-
-    setTasks((prev) => [
-      ...prev,
-      { id: Date.now(), done: false, text: newTaskText },
-    ]);
+    const { data } = await axios.post("/api/tasks", { text: newTaskText }, authHeader());
+    setTasks((prev) => [...prev, data]);
     setNewTaskText("");
   };
-
   return (
     <section className="apple-card widget-gerenciador-tarefas grid-right-notes">
       <div className="card-header-actions">
@@ -187,10 +187,10 @@ function GerenciadorTarefas() {
       <div className="home-tasks-list">
         {tasks.map((task) => (
           <div
-            className="task-item"
-            key={task.id}
-            onClick={() => toggleTask(task.id)}
-            onKeyDown={(e) => e.key === "Enter" && toggleTask(task.id)}
+          className="task-item"
+          key={task._id}
+          onClick={() => toggleTask(task._id, task.done)}
+          onKeyDown={(e) => e.key === "Enter" && toggleTask(task._id, task.done)}
             role="button"
             tabIndex={0}
           >

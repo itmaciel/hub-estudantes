@@ -1,34 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../style/Calendario.css";
 
 export default function Calendario() {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
-  const [compromissos, setCompromissos] = useState({});
+  const [compromissos, setCompromissos] = useState({}); // { "YYYY-MM-DD": { _id, title } }
 
-  const handleDayClick = (value) => {
-    const dataChave = value.toISOString().split("T")[0];
-    const nomeCompromisso = prompt(
+  const authHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+
+  // Load all events and reshape into the map your UI already uses
+  useEffect(() => {
+    axios.get("/api/events", authHeader()).then(({ data }) => {
+      const map = {};
+      data.forEach((e) => { map[e.date] = { _id: e._id, title: e.title }; });
+      setCompromissos(map);
+    });
+  }, []);
+
+  const handleDayClick = async (value) => {
+    const dateKey = value.toISOString().split("T")[0];
+    const titulo = prompt(
       `Adicionar evento para o dia ${value.getDate()}/${value.getMonth() + 1}:`
     );
+    if (!titulo?.trim()) return;
 
-    if (nomeCompromisso && nomeCompromisso.trim() !== "") {
-      setCompromissos((prev) => ({
-        ...prev,
-        [dataChave]: nomeCompromisso,
-      }));
-    }
+    const { data } = await axios.post("/api/events", { date: dateKey, title: titulo }, authHeader());
+    setCompromissos((prev) => ({ ...prev, [dateKey]: { _id: data._id, title: data.title } }));
   };
 
   const renderTileContent = ({ date, view }) => {
-    if (view === "month") {
-      const dataChave = date.toISOString().split("T")[0];
-      const eventoDoDia = compromissos[dataChave];
-      return eventoDoDia ? (
-        <div className="react-cal-event">{eventoDoDia}</div>
-      ) : null;
-    }
+    if (view !== "month") return null;
+    const dateKey = date.toISOString().split("T")[0];
+    const evento = compromissos[dateKey];
+    return evento ? <div className="react-cal-event">{evento.title}</div> : null;
   };
 
   return (
