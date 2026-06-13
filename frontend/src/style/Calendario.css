@@ -1,8 +1,172 @@
+/* CONTAINER PRINCIPAL DA PÁGINA */
+.calendario-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1000px; /* Alinha com o limite dos seus outros dashboards */
+  margin: 0 auto;
+}
+
+/* CABEÇALHO DA PÁGINA */
+.calendario-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1c1c1e;
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+
+.calendario-header p {
+  font-size: 14px;
+  color: #8e8e93;
+  margin-top: 4px;
+}
+
+/* CARD WRAPPER QUE ENVOLVE O CALENDÁRIO */
+.apple-calendar-wrapper {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* CONFIGURAÇÃO INTERNA DA BIBLIOTECA REACT-CALENDAR */
+.react-calendar {
+  width: 100% !important; /* Faz o calendário se esticar de ponta a ponta horizontalmente */
+  border: none !important;
+  font-family: inherit !important;
+  background: transparent !important;
+}
+
+/* NAVEGAÇÃO DO TOPO (MÊS E SETAS) */
+.react-calendar__navigation {
+  display: flex;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.react-calendar__navigation button {
+  color: #0071e3 !important; /* Azul clássico Apple */
+  font-size: 16px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.react-calendar__navigation button:hover {
+  background: #f2f2f7 !important;
+}
+
+.react-calendar__navigation__label {
+  font-size: 17px !important;
+  color: #1c1c1e !important;
+  pointer-events: none; /* Desativa cliques desnecessários no texto do mês */
+}
+
+/* DIAS DA SEMANA (DOM, SEG, TER...) */
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8e8e93;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid #e5e5ea;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important; /* Remove os pontilhados embaixo dos dias */
+}
+
+/* BOTÕES DOS DIAS (A GRADE) */
+.react-calendar__month-view__days__day {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1c1c1e;
+  background: none;
+  border: none;
+  height: 80px; /* Aumentamos a altura para dar espaço aos eventos internos */
+  vertical-align: top;
+  text-align: right;
+  padding: 8px !important;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  transition: all 0.15s ease;
+}
+
+/* Hover nos dias */
+.react-calendar__month-view__days__day:hover {
+  background: #f2f2f7 !important;
+}
+
+/* Dia Atual (Hoje) */
+.react-calendar__tile--now {
+  background: rgba(0, 113, 227, 0.08) !important;
+  color: #0071e3 !important;
+  font-weight: 700;
+}
+
+/* Dia Selecionado */
+.react-calendar__tile--active {
+  background: #0071e3 !important;
+  color: #ffffff !important;
+}
+
+.react-calendar__tile--active:hover {
+  background: #0077ed !important;
+}
+
+/* Dias de outros meses (apagadinhos) */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #c7c7cc !important;
+}
+
+/* ESTILIZAÇÃO DO EVENTO INSCRITO NO DIA */
+.react-cal-event {
+  width: 100%;
+  background: #34c759; /* Verde acadêmico sutil para os cards de eventos */
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-radius: 6px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Corta o texto com '...' se for muito grande */
+  box-sizing: border-box;
+  margin-top: 4px;
+  box-shadow: 0 2px 6px rgba(52, 199, 89, 0.2);
+}
+
+/* Garante que o texto do evento fique branco mesmo se o dia estiver ativo */
+.react-calendar__tile--active .react-cal-event {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   CSS DO MODAL (MANTIDO E ADAPTADO)
+   ========================================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,8 +178,8 @@
   border-radius: 20px;
   padding: 28px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 400px; /* Mantém apenas essa linha correta de tamanho máximo */
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -50,7 +214,7 @@
 }
 
 .modal-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #8e8e93;
   text-transform: uppercase;
@@ -70,15 +234,10 @@
   box-sizing: border-box;
 }
 
-.modal-input::placeholder {
-  color: #aeaeb2;
-}
-
 .modal-actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  margin-top: 4px;
 }
 
 .btn-cancel {
@@ -90,23 +249,17 @@
   font-weight: 500;
   color: #636366;
   cursor: pointer;
-  font-family: inherit;
 }
 
 .btn-save {
   background: #0071e3;
+  color: white;
   border: none;
   padding: 10px 18px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #ffffff;
   cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-save:hover {
-  background: #0077ed;
 }
 
 .btn-delete {
@@ -118,10 +271,5 @@
   font-weight: 500;
   color: #ff3b30;
   cursor: pointer;
-  font-family: inherit;
   margin-right: auto;
-}
-
-.btn-delete:hover {
-  background: #ffe0de;
 }
